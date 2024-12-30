@@ -1,6 +1,6 @@
 class Config:
     REVANCED_APKS_RELEASE_URL = (
-        "https://api.github.com/repos/kotakbiasas/revanced-magisk-module/releases/latest"
+        "https://api.github.com/repos/kotakbiasa/revanced-magisk-module/releases/latestt"
     )
     MICROG_RELEASE_URL = (
         "https://github.com/ReVanced/GmsCore/releases/latest"
