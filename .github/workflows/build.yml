@@ -141,5 +141,26 @@ jobs:
           token: ${{ secrets.TG_TOKEN }}
           format: markdown
           message_file: release_notification.md
-  
 
+
+      - name: Prepare Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9' # Ganti dengan versi Python yang dibutuhkan
+
+      - name: Install pyrogram and tgcrypto
+        run: |
+          pip install -U pyrogram tgcrypto
+
+      - name: Run upload.py
+        env:
+          API_ID: ${{ secrets.TG_API_ID }}
+          API_HASH: ${{ secrets.TG_API_HASH }}
+          BOT_TOKEN: ${{ secrets.TG_TOKEN }}
+        run: curl -o upload.py https://raw.githubusercontent.com/kotakbiasa/TelegramZipUploader/main/upload.py && python upload.py --dir build --api_id $API_ID --api_hash $API_HASH --bot_token $BOT_TOKEN
+
+      - uses: actions/upload-artifact@v3.1.2
+        with:
+          name: logs
+          path: logs
+          if-no-files-found: ignore
