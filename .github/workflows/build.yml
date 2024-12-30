@@ -149,10 +149,22 @@ jobs:
       - name: Upload files to Telegram
         if: env.TG_TOKEN != null
         env:
-          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_API_ID: ${{ secrets.TG_API_ID }}
+          TG_API_HASH: ${{ secrets.TG_API_HASH }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: |
           cd build || { echo "build folder not found"; exit 1; }
-          for OUTPUT in *; do
-            curl -F document=@"$OUTPUT" "https://api.telegram.org/bot${TG_TOKEN}/sendDocument?chat_id=${TG_CHAT_ID}"
-          done
+          echo "from telethon import TelegramClient" > upload_telegram.py
+          echo "import os" >> upload_telegram.py
+          echo "api_id = int(os.getenv('TG_API_ID'))" >> upload_telegram.py
+          echo "api_hash = os.getenv('TG_API_HASH')" >> upload_telegram.py
+          echo "chat_id = int(os.getenv('TG_CHAT_ID'))" >> upload_telegram.py
+          echo "client = TelegramClient('uploader', api_id, api_hash)" >> upload_telegram.py
+          echo "async def main():" >> upload_telegram.py
+          echo "    await client.start()" >> upload_telegram.py
+          echo "    for file in os.listdir('.'):" >> upload_telegram.py
+          echo "        if os.path.isfile(file):" >> upload_telegram.py
+          echo "            await client.send_file(chat_id, file)" >> upload_telegram.py
+          echo "with client:" >> upload_telegram.py
+          echo "    client.loop.run_until_complete(main())" >> upload_telegram.py
+          python3 upload_telegram.py
