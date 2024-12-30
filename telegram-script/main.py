@@ -6,7 +6,7 @@ from markdown_to_telegraph import MarkdownToTelegraph
 # Read release.json file
 release = requests.get(Config.REVANCED_APKS_RELEASE_URL).json()
 
-telegraph = MarkdownToTelegraph("revanced_apks_web", "ReVanced APKs", "https://t.me/KotakReVanced")
+telegraph = MarkdownToTelegraph("ReVanced", "ReVanced APKs", "https://t.me/KotakReVanced")
 
 
 def generate_file_bullet(file_name, file_url):
