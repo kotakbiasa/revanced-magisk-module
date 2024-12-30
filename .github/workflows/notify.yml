@@ -3,9 +3,9 @@ name: Act on release
 on: 
   workflow_call:
     secrets:
-      TELEGRAM_TO:
+      TG_CHAT_ID:
         required: true
-      TELEGRAM_TOKEN:
+      TG_TOKEN:
         required: true
     inputs:
       release_tag:
