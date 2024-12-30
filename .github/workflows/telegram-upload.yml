@@ -2,32 +2,6 @@ name: Telegram Custom Upload
 
 on:
   workflow_dispatch:
-    inputs:
-      API_ID:
-        description: 'Telegram API ID'
-        required: true
-        type: number
-      API_HASH:
-        description: 'Telegram API HASH'
-        required: true
-        type: string
-      BOT_TOKEN:
-        description: 'Bot Token(Sender)'
-        required: true
-        type: string
-      CHAT_ID:
-        description: 'Chat ID(Receiver)'
-        required: true
-        type: number
-      STICKER_ID:
-        description: 'Sticker to Send'
-        required: false
-        default: 'CAACAgUAAxkBAAEY3d5jRDs4sojYzahDxU7wvl7_e1yRhwACuAYAApqD2VV9UCzjLNawRCoE'
-        type: string
-      CHANGELOG_GITHUB_REPOSITORY:
-        description: 'Repo to Fetch Changelog'
-        required: false
-        type: string
 
 jobs:
   tg-upload:
@@ -38,4 +12,4 @@ jobs:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TG_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.CHAT_ID }}
       STICKER_ID: ${{ secrets.STICKER_ID }}
-      CHANGELOG_GITHUB_REPOSITORY: ${{ secrets.CHANGELOG_GITHUB_REPOSITORY }}
+      CHANGELOG_GITHUB_REPOSITORY: ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}
