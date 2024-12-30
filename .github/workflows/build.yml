@@ -107,26 +107,66 @@ jobs:
           file_pattern: build.md *-update.json
           commit_message: Bump version ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}
 
-      - name: Concatenate files and send to Telegram
+      - name: Report to Telegram
+        env:
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+        if: env.TG_TOKEN != null
+        run: |
+          cd build || { echo "build folder not found"; exit 1; }
+
+          TG_CHAT="-1002089161312"
+          NL=$'\n'
+          APKS=""
+          MODULES=""
+          for OUTPUT in *; do
+            DL_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}/${OUTPUT}"
+            if [[ $OUTPUT = *.apk ]]; then
+              APKS+="${NL}📦[${OUTPUT}](${DL_URL})"
+            elif [[ $OUTPUT = *.zip ]]; then
+              MODULES+="${NL}📦[${OUTPUT}](${DL_URL})"
+            fi
+          done
+          MODULES=${MODULES#"$NL"}
+          APKS=${APKS#"$NL"}
+
+          BODY="$(sed 's/^\* \*\*/↪ \*\*/g; s/^\* `/↪ \*\*/g; s/`/\*/g; s/^\* /\↪/g; s/\*\*/\*/g; s/###//g; s/^- /↪ /g; /^==/d;' ../build.md)"
+          MSG="*New build!*
+
+          ${BODY}
+
+          *▼ Download Links:*
+          Modules:
+          ${MODULES}
+
+          APKs:
+          ${APKS}
+          "
+          echo "'$MSG'"
+          MSG=${MSG:0:9450}
+          POST="https://api.telegram.org/bot${TG_TOKEN}/sendMessage"
+          curl -X POST --data-urlencode "parse_mode=Markdown" --data-urlencode "disable_web_page_preview=true" --data-urlencode "text=${MSG}" --data-urlencode "chat_id=${TG_CHAT}" "$POST"
+
+      - name: Upload files to Telegram
         if: env.TG_TOKEN != null
         env:
           TG_TOKEN: ${{ secrets.TG_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: |
           cd build || { echo "build folder not found"; exit 1; }
-
-          TG_CHAT="-1002089161312"
-          NL=$'\n'
-          FILE_CONTENTS=""
+          
           for OUTPUT in *; do
-            FILE_CONTENTS+="$(basename "$OUTPUT"):$(base64 "$OUTPUT")${NL}"
+            if [ -f "$OUTPUT" ]; then
+              # Split large files into chunks
+              FILE_SIZE=$(stat -c%s "$OUTPUT")
+              MAX_SIZE=$((50 * 1024 * 1024)) # 50MB
+
+              if [ "$FILE_SIZE" -gt "$MAX_SIZE" ]; then
+                split -b "$MAX_SIZE" "$OUTPUT" "${OUTPUT}_part_"
+                for PART in ${OUTPUT}_part_*; do
+                  curl -F document=@"$PART" "https://api.telegram.org/bot${TG_TOKEN}/sendDocument?chat_id=${TG_CHAT_ID}"
+                done
+              else
+                curl -F document=@"$OUTPUT" "https://api.telegram.org/bot${TG_TOKEN}/sendDocument?chat_id=${TG_CHAT_ID}"
+              fi
+            fi
           done
-
-          MSG="*New build!*
-
-          ${FILE_CONTENTS}
-          "
-          echo "'$MSG'"
-          MSG=${MSG:0:9450}
-          POST="https://api.telegram.org/bot${TG_TOKEN}/sendMessage"
-          curl -X POST --data-urlencode "parse_mode=Markdown" --data-urlencode "disable_web_page_preview=true" --data-urlencode "text=${MSG}" --data-urlencode "chat_id=${TG_CHAT}" "$POST"
