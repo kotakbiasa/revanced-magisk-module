@@ -2,11 +2,6 @@ name: Act on release
 
 on: 
   workflow_call:
-    secrets:
-      TG_CHAT_ID:
-        required: true
-      TG_TOKEN:
-        required: true
     inputs:
       release_tag:
         type: string
