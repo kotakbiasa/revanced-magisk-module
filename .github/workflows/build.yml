@@ -1,13 +1,6 @@
 name: Build Modules
 on:
   workflow_call:
-    secrets:
-      TG_TOKEN:
-        description: "Telegram Bot Token"
-        required: true
-      TG_CHAT_ID:
-        description: "Telegram Chat ID"
-        required: true
     inputs:
       from_ci:
         type: boolean
