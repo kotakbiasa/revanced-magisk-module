@@ -114,8 +114,30 @@ jobs:
           skip_checkout: true
           file_pattern: build.md *-update.json
           commit_message: Bump version ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}
+    - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: true
 
-  notify:
-    needs: run
-    uses: ./.github/workflows/notify.yml
-    if: github.ref == 'refs/heads/main'
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' # The python version to use.
+          cache: 'pip'
+          cache-dependency-path: 'telegram-script/requirements.txt'
+        
+      - name: Install dependencies
+        run: pip install -r telegram-script/requirements.txt
+     
+      - name: Run telegram notification script
+        run: python3 telegram-script
+          
+      - name: Telegram Channel Update
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TG_CHAT_ID }}
+          token: ${{ secrets.TG_TOKEN }}
+          format: markdown
+          message_file: release_notification.md
+
