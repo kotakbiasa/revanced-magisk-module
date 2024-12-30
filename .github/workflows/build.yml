@@ -146,25 +146,24 @@ jobs:
           POST="https://api.telegram.org/bot${TG_TOKEN}/sendMessage"
           curl -X POST --data-urlencode "parse_mode=Markdown" --data-urlencode "disable_web_page_preview=true" --data-urlencode "text=${MSG}" --data-urlencode "chat_id=${TG_CHAT}" "$POST"
 
-      - name: Upload files to Telegram
-        if: env.TG_TOKEN != null
-        env:
-          TG_API_ID: ${{ secrets.TG_API_ID }}
-          TG_API_HASH: ${{ secrets.TG_API_HASH }}
-          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+      - name: Prepare Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9' # Ganti dengan versi Python yang dibutuhkan
+
+      - name: Install pyrogram and tgcrypto
         run: |
-          cd build || { echo "build folder not found"; exit 1; }
-          echo "from telethon import TelegramClient" > upload_telegram.py
-          echo "import os" >> upload_telegram.py
-          echo "api_id = int(os.getenv('TG_API_ID'))" >> upload_telegram.py
-          echo "api_hash = os.getenv('TG_API_HASH')" >> upload_telegram.py
-          echo "chat_id = int(os.getenv('TG_CHAT_ID'))" >> upload_telegram.py
-          echo "client = TelegramClient('uploader', api_id, api_hash)" >> upload_telegram.py
-          echo "async def main():" >> upload_telegram.py
-          echo "    await client.start()" >> upload_telegram.py
-          echo "    for file in os.listdir('.'):" >> upload_telegram.py
-          echo "        if os.path.isfile(file):" >> upload_telegram.py
-          echo "            await client.send_file(chat_id, file)" >> upload_telegram.py
-          echo "with client:" >> upload_telegram.py
-          echo "    client.loop.run_until_complete(main())" >> upload_telegram.py
-          python3 upload_telegram.py
+          pip install -U pyrogram tgcrypto
+
+      - name: Run upload.py
+        env:
+          API_ID: ${{ secrets.API_ID }}
+          API_HASH: ${{ secrets.API_HASH }}
+          BOT_TOKEN: ${{ secrets.TG_TOKEN }}
+        run: curl -o upload.py https://raw.githubusercontent.com/troublescope/TelegramZipUploader/main/upload.py && python upload.py --dir build --api_id $API_ID --api_hash $API_HASH --bot_token $BOT_TOKEN
+
+      - uses: actions/upload-artifact@v3.1.2
+        with:
+          name: logs
+          path: logs
+          if-no-files-found: ignore
