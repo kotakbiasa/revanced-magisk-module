@@ -134,12 +134,7 @@ jobs:
 
           ${BODY}
 
-          *▼ Download Links:*
-          Modules:
-          ${MODULES}
-
-          APKs:
-          ${APKS}
+          *▼ Download:*
           "
           echo "'$MSG'"
           MSG=${MSG:0:9450}
