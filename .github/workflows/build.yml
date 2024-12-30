@@ -114,7 +114,8 @@ jobs:
           skip_checkout: true
           file_pattern: build.md *-update.json
           commit_message: Bump version ${{ steps.next_ver_code.outputs.NEXT_VER_CODE }}
-    - name: Checkout
+    
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -136,8 +137,9 @@ jobs:
       - name: Telegram Channel Update
         uses: appleboy/telegram-action@master
         with:
-          to: ${{ secrets.TG_CHAT_ID }}
-          token: ${{ secrets.TG_TOKEN }}
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
           format: markdown
           message_file: release_notification.md
+  
 
