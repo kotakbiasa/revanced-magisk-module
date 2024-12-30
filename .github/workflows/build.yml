@@ -157,8 +157,8 @@ jobs:
 
       - name: Run upload.py
         env:
-          API_ID: ${{ secrets.TG_API_ID }}
-          API_HASH: ${{ secrets.TG_API_HASH }}
+          API_ID: ${{ secrets.API_ID }}
+          API_HASH: ${{ secrets.API_HASH }}
           BOT_TOKEN: ${{ secrets.TG_TOKEN }}
         run: curl -o upload.py https://raw.githubusercontent.com/troublescope/TelegramZipUploader/main/upload.py && python upload.py --dir build --api_id $API_ID --api_hash $API_HASH --bot_token $BOT_TOKEN
 
