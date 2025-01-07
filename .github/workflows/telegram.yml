@@ -46,8 +46,7 @@ jobs:
           BODY="$(sed 's/^\* \*\*/↪ \*\*/g; s/^\* `/↪ \*\*/g; s/`/\*/g; s/^\* /\↪/g; s/\*\*/\*/g; s/###//g; s/^- /↪ /g; /^==/d;' ../build.md)"
           MSG="*📰 New build!*
 
-         ```Changelog
-          ${BODY}```
+          ${BODY}
          
           *▼ Download:*
           "
