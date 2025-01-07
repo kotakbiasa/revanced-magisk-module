@@ -1,5 +1,5 @@
 
-name: Build Modules
+name: Telegram Upload
 on:
   workflow_call:
     inputs:
