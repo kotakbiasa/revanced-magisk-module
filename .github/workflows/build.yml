@@ -132,12 +132,9 @@ jobs:
           BODY="$(sed 's/^\* \*\*/↪ \*\*/g; s/^\* `/↪ \*\*/g; s/`/\*/g; s/^\* /\↪/g; s/\*\*/\*/g; s/###//g; s/^- /↪ /g; /^==/d;' ../build.md)"
           MSG="*📰 New build!*
 
-          > [details](https://raw.githubusercontent.com/${{ github.repository }}/update/build.md)
-          \n<details>
-          <summary>Changelog</summary>
-          \n${BODY}\n
-          </details>
-
+         ```Changelog
+          ${BODY}```
+         
           *▼ Download:*
           "
           echo "'$MSG'"
