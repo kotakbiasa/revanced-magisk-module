@@ -161,7 +161,7 @@ jobs:
           BOT_TOKEN: ${{ secrets.TG_TOKEN }}
         run: curl -o upload.py https://raw.githubusercontent.com/kotakbiasa/TelegramZipUploader/main/upload.py && python upload.py --dir build --api_id $API_ID --api_hash $API_HASH --bot_token $BOT_TOKEN
 
-      - uses: actions/upload-artifact@v3.1.2
+      - uses: actions/upload-artifact@v4
         with:
           name: logs
           path: logs
